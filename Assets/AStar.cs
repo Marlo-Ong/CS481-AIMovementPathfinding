@@ -1,22 +1,91 @@
 using UnityEngine;
 using System.Collections.Generic;
+using System;
 
 public class AStar
 {
+    private class Grid
+    {
+        public int sizeX { get; private set; }
+        public int sizeY { get; private set; }
+        private Node[,] nodes;
+        private Vector3 origin;
+
+        public Grid(int sizeX, int sizeY, Vector3 origin)
+        {
+            this.sizeX = sizeX;
+            this.sizeY = sizeY;
+            this.nodes = new Node[sizeX, sizeY];
+
+            for (int x = 0; x < sizeX; x++)
+            {
+                for (int y = 0; y < sizeY; y++)
+                {
+                    this.nodes[x, y] = new Node(x, y, walkable: true);
+                }
+            }
+        }
+
+        public Node GetNode(Vector3 worldPos)
+        {
+            return this.GetNode((int)worldPos.x, (int)worldPos.z);
+        }
+
+        public Node GetNode(Vector2Int coordinates)
+        {
+            return this.GetNode(coordinates.x, coordinates.y);
+        }
+
+        public Node GetNode(int x, int y)
+        {
+            bool isValid = x >= 0 && y >= 0 && x < this.sizeX && y < this.sizeY;
+            return isValid ? this.nodes[x, y] : null;
+        }
+    }
+
+    public class Node : IEquatable<Node>
+    {
+        public Node parent;
+        public int gCost;
+        public int hCost;
+        public int fCost => this.gCost + this.hCost;
+
+        public bool walkable;
+        public Vector2Int coordinates;
+        public int x => this.coordinates.x;
+        public int y => this.coordinates.y;
+
+        public Node(int x, int y, bool walkable)
+        {
+            this.coordinates = new(x, y);
+            this.walkable = walkable;
+        }
+
+        public bool Equals(Node other)
+        {
+            return this.coordinates == other.coordinates;
+        }
+
+        public override string ToString()
+        {
+            return $"{coordinates}";
+        }
+    }
+
     private Grid grid;
     private List<Node> openSet;
     private HashSet<Node> closedSet;
 
-    public void FindPath(Grid grid, Vector3 startPos, Vector3 targetPos)
+    public List<Node> FindPath(Vector3 startPos, Vector3 targetPos)
     {
-        this.grid = grid;
-        Node startNode = grid.NodeFromWorldPoint(startPos);
-        Node target = grid.NodeFromWorldPoint(targetPos);
+        this.grid = new Grid(100, 100, Vector3.zero);
+        Node start = this.grid.GetNode(startPos);
+        Node target = this.grid.GetNode(targetPos);
 
         this.openSet = new();
         this.closedSet = new();
 
-        this.openSet.Add(startNode);
+        this.openSet.Add(start);
 
         while (openSet.Count > 0)
         {
@@ -78,15 +147,15 @@ public class AStar
         // to get to the same axis as B, then use straight-line distance
         //      (with simplified length floor(10 * 1))
 
-        Vector2 diff = b - a;
+        var diff = new Vector2Int(Mathf.Abs(b.x - a.x), Mathf.Abs(b.y - a.y));
         return diff.x > diff.y
             ? 14 * diff.y + 10 * (diff.x - diff.y)
             : 14 * diff.x + 10 * (diff.y - diff.x);
     }
 
-    private IEnumerable<Node> GetNeighbors(Node node)
+    private List<Node> GetNeighbors(Node node)
     {
-        IEnumerable<Node> neighbors = new();
+        List<Node> neighbors = new List<Node>();
         for (int i = -1; i <= 1; i++)
         {
             for (int j = -1; j <= 1; j++)
@@ -98,13 +167,15 @@ public class AStar
                 if (newX == 0 && newY == 0)
                     continue;
 
-                if (this.grid.TryGetNode(newX, newY, out Node neighbor))
+                Node neighbor = this.grid.GetNode(newX, newY);
+                if (neighbor != null)
                     neighbors.Add(neighbor);
             }
         }
+        return neighbors;
     }
 
-    private Node GetLowestFCostNode(IEnumerable<Node> set)
+    private Node GetLowestFCostNode(List<Node> set)
     {
         if (set.Count < 1)
             return null;
