@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using UnityEngine;
 
 public enum Mode
@@ -45,14 +46,6 @@ public class GameMgr : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        Vector3 position = Vector3.zero;
-        foreach (GameObject go in EntityMgr.inst.entityPrefabs)
-        {
-            Entity ent = EntityMgr.inst.CreateEntity(go.GetComponent<Entity>().entityType, position, Vector3.zero);
-            ent.isSelected = false;
-            position.x += 200;
-        }
-
         this.isGameActive = false;
     }
 
@@ -77,36 +70,29 @@ public class GameMgr : MonoBehaviour
     public static void StartGame()
     {
         inst.isGameActive = true;
+
+        EnvironmentMgr.CreateEnvironment(Environment);
+
+        Entity entity = EntityMgr.inst.CreateEntity(EntityType.TugBoat, Vector3.zero, Vector3.zero);
+        entity.isSelected = false;
+        inst.StartCoroutine(inst.StartAStar(entity, entity.GetComponent<UnitAI>()));
+
         OnGameStarted?.Invoke();
+    }
+
+    private IEnumerator StartAStar(Entity ent, UnitAI uai)
+    {
+        yield return new WaitForSeconds(1.0f);
+
+        AStar aStar = new();
+        var path = aStar.FindPath(Vector3.zero, new Vector3(80, 0, 50));
+        foreach (var node in path)
+            uai.SetCommand(new Move(ent, new Vector3(node.x, 0, node.y)));
     }
 
     public static void StopGame()
     {
         inst.isGameActive = false;
         OnGameStopped?.Invoke();
-    }
-
-    public Vector3 position;
-    public float spread = 20;
-    public float colNum = 10;
-    public float initZ;
-    // Update is called once per frame
-    void Update()
-    {
-        if (input.Entities.Create100.triggered)
-        {
-            initZ = position.z;
-            for (int i = 0; i < 10; i++)
-            {
-                for (int j = 0; j < 10; j++)
-                {
-                    Entity ent = EntityMgr.inst.CreateEntity(EntityType.PilotVessel, position, Vector3.zero);
-                    position.z += spread;
-                }
-                position.x += spread;
-                position.z = initZ;
-            }
-            DistanceMgr.inst.Initialize();
-        }
     }
 }

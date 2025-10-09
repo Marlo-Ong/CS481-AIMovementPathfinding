@@ -9,22 +9,24 @@ public class UnitAI : MonoBehaviour
     void Start()
     {
         entity = GetComponentInParent<Entity>();
-        commands = new List<Command>();
-        intercepts = new List<Intercept>();
-        moves = new List<Move>();
     }
 
-    public List<Move> moves;
-    public List<Command> commands;
-    public List<Intercept> intercepts;
+    public List<Move> moves = new();
+    public List<Command> commands = new();
+    public List<Intercept> intercepts = new();
 
     // Update is called once per frame
     void Update()
     {
-        if (commands.Count > 0) {
-            if (commands[0].IsDone()) {
+        if (commands.Count > 0)
+        {
+            Debug.Log(commands[0].ToString());
+            if (commands[0].IsDone())
+            {
                 StopAndRemoveCommand(0);
-            } else {
+            }
+            else
+            {
                 commands[0].Tick();
                 commands[0].isRunning = true;
                 DecorateAll();
@@ -37,17 +39,17 @@ public class UnitAI : MonoBehaviour
         commands[index].Stop();
         commands.RemoveAt(index);
     }
-    
+
     public void StopAndRemoveAllCommands()
     {
-        for(int i = commands.Count - 1; i >= 0; i--) {
+        for (int i = commands.Count - 1; i >= 0; i--)
+        {
             StopAndRemoveCommand(i);
         }
     }
 
     public void AddCommand(Command c)
     {
-        //print("Adding command; " + c.ToString());
         c.Init();
         commands.Add(c);
         if (c is Intercept)
@@ -60,7 +62,6 @@ public class UnitAI : MonoBehaviour
 
     public void SetCommand(Command c)
     {
-        //print("Setting command: " + c.ToString());
         StopAndRemoveAllCommands();
         commands.Clear();
         moves.Clear();
@@ -73,7 +74,8 @@ public class UnitAI : MonoBehaviour
     public void DecorateAll()
     {
         Command prior = null;
-        foreach(Command c in commands) {
+        foreach (Command c in commands)
+        {
             Decorate(prior, c);
             prior = c;
         }
@@ -82,22 +84,26 @@ public class UnitAI : MonoBehaviour
     //decoration logic (UI logic) in general is always convoluted. Ugh
     public void Decorate(Command prior, Command current)
     {
-        if (current.line != null) {
+        if (current.line != null)
+        {
             current.line.gameObject.SetActive(entity.isSelected);
             if (prior == null)
                 current.line.SetPosition(0, entity.position);
             else
                 current.line.SetPosition(0, prior.line.GetPosition(1));
 
-            if (current is Intercept) { //Most specific
+            if (current is Intercept)
+            { //Most specific
                 Intercept intercept = current as Intercept;
-                if (intercept.isRunning)// 
+                if (intercept.isRunning)//
                     intercept.line.SetPosition(1, intercept.predictedMovePosition);
                 else
                     intercept.line.SetPosition(1, intercept.targetEntity.position);
                 intercept.line.SetPosition(2, intercept.targetEntity.position);
 
-            } else if (current is Follow) { // Less specific
+            }
+            else if (current is Follow)
+            { // Less specific
                 Follow f = current as Follow;
                 f.line.SetPosition(1, f.targetEntity.position + f.offset);
                 f.line.SetPosition(2, f.targetEntity.position);
@@ -107,7 +113,8 @@ public class UnitAI : MonoBehaviour
         }
 
         //potential fields lines
-        if(!(current is Follow) && !(current is Intercept) && AIMgr.inst.isPotentialFieldsMovement){ 
+        if (!(current is Follow) && !(current is Intercept) && AIMgr.inst.isPotentialFieldsMovement)
+        {
             Move m = current as Move;
             m.potentialLine.SetPosition(0, entity.position);
             Vector3 newpos = Vector3.zero;

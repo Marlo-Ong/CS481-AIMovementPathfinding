@@ -111,17 +111,19 @@ public class DistanceMgr : MonoBehaviour
         int n = EntityMgr.inst.entities.Count;
         potentials2D = new Potential[n, n];
         i = 0;
-        foreach (Entity ent1 in EntityMgr.inst.entities) {
+        foreach (Entity ent1 in EntityMgr.inst.entities)
+        {
             Dictionary<Entity, Potential> ent1PotDictionary = new Dictionary<Entity, Potential>();
             List<Potential> ent1PotList = new List<Potential>();
             potentialsDictionary.Add(ent1, ent1PotDictionary);
             potentialsList.Add(ent1PotList);
             j = 0;
-            foreach (Entity ent2 in EntityMgr.inst.entities) {
+            foreach (Entity ent2 in EntityMgr.inst.entities)
+            {
                 Potential pot = new Potential(ent1, ent2);
                 ent1PotDictionary.Add(ent2, pot);
                 ent1PotList.Add(pot);
-                potentials2D[i,j] = pot;
+                potentials2D[i, j] = pot;
                 j++;
             }
             i++;
@@ -135,8 +137,8 @@ public class DistanceMgr : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (isInitialized)
-            UpdatePotentials();
+        if (isInitialized) ;
+        // UpdatePotentials();
         else
             Initialize();
     }
@@ -146,12 +148,14 @@ public class DistanceMgr : MonoBehaviour
     {
         Potential p1, p2;
         Entity ent1, ent2;
-        for(int i = 0; i < EntityMgr.inst.entities.Count - 1; i++) {
+        for (int i = 0; i < EntityMgr.inst.entities.Count - 1; i++)
+        {
             ent1 = EntityMgr.inst.entities[i];
             if (ent1 == SelectionMgr.inst.selectedEntity)
                 selectedEntityPotentials = potentialsList[i];
             //don't do diagonal
-            for(int j = i+1; j < EntityMgr.inst.entities.Count; j++) {
+            for (int j = i + 1; j < EntityMgr.inst.entities.Count; j++)
+            {
                 ent2 = EntityMgr.inst.entities[j];
 
                 p1 = potentials2D[i, j];

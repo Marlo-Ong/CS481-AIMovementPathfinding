@@ -10,6 +10,7 @@ public class AStar
         public int sizeY { get; private set; }
         private Node[,] nodes;
         private Vector3 origin;
+        LayerMask obstacleLayer = LayerMask.GetMask("Obstacle");
 
         public Grid(int sizeX, int sizeY, Vector3 origin)
         {
@@ -21,7 +22,8 @@ public class AStar
             {
                 for (int y = 0; y < sizeY; y++)
                 {
-                    this.nodes[x, y] = new Node(x, y, walkable: true);
+                    Vector3 worldPos = new Vector3(x, 0, y);
+                    this.nodes[x, y] = new Node(x, y, walkable: IsWalkable(worldPos));
                 }
             }
         }
@@ -40,6 +42,12 @@ public class AStar
         {
             bool isValid = x >= 0 && y >= 0 && x < this.sizeX && y < this.sizeY;
             return isValid ? this.nodes[x, y] : null;
+        }
+
+        public bool IsWalkable(Vector3 position)
+        {
+            bool hit = Physics.CheckSphere(position + new Vector3(0.5f, 0, 0.5f), radius: 1f, layerMask: obstacleLayer);
+            return !hit;
         }
     }
 
