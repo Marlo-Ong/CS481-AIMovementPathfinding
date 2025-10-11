@@ -11,9 +11,12 @@ public class EnvironmentMgr : MonoBehaviour
     {
         public Vector3 min;
         public Vector3 max;
-        public Vector3 GetRandom()
+        public Vector3 GetRandom(bool uniform = false)
         {
             float x = UnityEngine.Random.Range(min.x, max.x);
+            if (uniform)
+                return new Vector3(x, x, x);
+
             float y = UnityEngine.Random.Range(min.y, max.y);
             float z = UnityEngine.Random.Range(min.z, max.z);
             return new Vector3(x, y, z);
@@ -116,7 +119,7 @@ public class EnvironmentMgr : MonoBehaviour
             instance.SetActive(true);
 
             instance.transform.position = this.obstaclePositionRange.GetRandom();
-            instance.transform.localScale = this.obstacleScaleRange.GetRandom();
+            instance.transform.localScale = this.obstacleScaleRange.GetRandom(uniform: obstaclePrefab == circleObstacle);
         }
     }
 

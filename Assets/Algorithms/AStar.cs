@@ -2,7 +2,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using System;
 
-public class AStar
+public class AStar : IAlgorithm
 {
     private class Grid
     {
@@ -14,13 +14,13 @@ public class AStar
 
         public Grid(int sizeX, int sizeY, Vector3 origin)
         {
-            this.sizeX = sizeX;
-            this.sizeY = sizeY;
-            this.nodes = new Node[sizeX, sizeY];
+            this.sizeX = sizeX + 1;
+            this.sizeY = sizeY + 1;
+            this.nodes = new Node[this.sizeX, this.sizeY];
 
-            for (int x = 0; x < sizeX; x++)
+            for (int x = 0; x < this.sizeX; x++)
             {
-                for (int y = 0; y < sizeY; y++)
+                for (int y = 0; y < this.sizeY; y++)
                 {
                     Vector3 worldPos = new Vector3(x, 0, y);
                     this.nodes[x, y] = new Node(x, y, walkable: IsWalkable(worldPos));
@@ -78,13 +78,15 @@ public class AStar
         {
             return $"{coordinates}";
         }
+
+        public static implicit operator Vector3(Node n) => new(n.x, 0, n.y);
     }
 
     private Grid grid;
     private List<Node> openSet;
     private HashSet<Node> closedSet;
 
-    public List<Node> FindPath(Vector3 startPos, Vector3 targetPos)
+    public List<Vector3> FindPath(Vector3 startPos, Vector3 targetPos)
     {
         this.grid = new Grid(100, 100, Vector3.zero);
         Node start = this.grid.GetNode(startPos);
@@ -133,9 +135,9 @@ public class AStar
         return this.RetracePath(start, target);
     }
 
-    private List<Node> RetracePath(Node start, Node end)
+    private List<Vector3> RetracePath(Node start, Node end)
     {
-        List<Node> path = new List<Node>();
+        List<Vector3> path = new List<Vector3>();
         Node current = end;
 
         while (current != start)
@@ -171,8 +173,8 @@ public class AStar
                 int newX = node.x + i;
                 int newY = node.y + j;
 
-                // Find neighboring nodes only
-                if (newX == 0 && newY == 0)
+                // Skip self
+                if (i == 0 && j == 0)
                     continue;
 
                 Node neighbor = this.grid.GetNode(newX, newY);

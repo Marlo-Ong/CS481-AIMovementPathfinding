@@ -37,6 +37,11 @@ public class GameMgr : MonoBehaviour
     private bool isGameActive;
     private Entity entity = null;
 
+    [Header("Assign in Inspector")]
+    public AlgorithmType algorithmType;
+    public Vector3 startPosition;
+    public Vector3 endPosition;
+
     private void Awake()
     {
         inst = this;
@@ -82,17 +87,23 @@ public class GameMgr : MonoBehaviour
 
         inst.entity = EntityMgr.inst.CreateEntity(EntityType.TugBoat, Vector3.zero, Vector3.zero);
         inst.entity.isSelected = false;
-        inst.StartCoroutine(inst.StartAStar(inst.entity, inst.entity.GetComponent<UnitAI>()));
+        inst.StartCoroutine(inst.StartAlgorithm(
+            inst.algorithmType,
+            inst.entity,
+            inst.startPosition,
+            inst.endPosition));
 
         OnGameStarted?.Invoke();
     }
 
-    private IEnumerator StartAStar(Entity ent, UnitAI uai)
+    private IEnumerator StartAlgorithm(AlgorithmType type, Entity ent, Vector3 startPos, Vector3 endPos)
     {
         yield return new WaitForSeconds(1.0f);
 
-        AStar aStar = new();
-        var path = aStar.FindPath(Vector3.zero, new Vector3(80, 0, 50));
+        IAlgorithm algorithm = AlgorithmFactory.GetAlgorithm(type);
+        var path = algorithm.FindPath(startPos, endPos);
+
+        UnitAI uai = ent.GetComponent<UnitAI>();
         foreach (var node in path)
             uai.AddCommand(new Move(ent, node));
     }

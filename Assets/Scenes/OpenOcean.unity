@@ -1879,6 +1879,7 @@ GameObject:
   - component: {fileID: 639876782}
   - component: {fileID: 639876784}
   - component: {fileID: 639876783}
+  - component: {fileID: 639876785}
   m_Layer: 9
   m_Name: AIMgr
   m_TagString: Untagged
@@ -1942,6 +1943,18 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 10000, y: 1, z: 10000}
   m_Center: {x: 0, y: -10, z: 0}
+--- !u!114 &639876785
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 639876781}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7ba0a2dc7aaaf4841ad6e97d0dbd47bb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!4 &661634719 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 2020023502598012820, guid: 4eadb14a1eece2a44a7ae893943f3d9f,
@@ -3517,6 +3530,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1129782061}
   - component: {fileID: 1129782062}
+  - component: {fileID: 1129782063}
   m_Layer: 0
   m_Name: GameMgr
   m_TagString: Untagged
@@ -3549,6 +3563,21 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6f307a68b0cd5d24da3eb78422925657, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  algorithmType: 0
+  startPosition: {x: 1, y: 0, z: 1}
+  endPosition: {x: 100, y: 0, z: 100}
+--- !u!114 &1129782063
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1129782060}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7ba0a2dc7aaaf4841ad6e97d0dbd47bb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &1142393662
