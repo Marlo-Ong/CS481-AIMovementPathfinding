@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 170076734}
-  m_IndirectSpecularColor: {r: 0.3731193, g: 0.38073996, b: 0.35872707, a: 1}
+  m_IndirectSpecularColor: {r: 0.37311918, g: 0.38073978, b: 0.35872713, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -3551,10 +3551,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6f307a68b0cd5d24da3eb78422925657, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  position: {x: -100, y: 0, z: -700}
-  spread: 50
-  colNum: 10
-  initZ: 0
 --- !u!1 &1142393662
 GameObject:
   m_ObjectHideFlags: 0
@@ -3718,6 +3714,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ToggleMultiSelect: {fileID: 1169124415}
+  SceneSelectionCanvas: {fileID: 894711017}
   isActive: 0
   entityName: {fileID: 85977859}
   speed: {fileID: 439174127}

@@ -7,6 +7,7 @@ public class UIMgr : MonoBehaviour
 {
     public static UIMgr inst;
     public GameObject ToggleMultiSelect;
+    public GameObject SceneSelectionCanvas;
     public bool isActive;
     private void Awake()
     {
@@ -17,12 +18,12 @@ public class UIMgr : MonoBehaviour
     void Start()
     {
         ToggleMultiSelect.SetActive(false);
-        #if UNITY_ANDROID
+#if UNITY_ANDROID
             ToggleMultiSelect.SetActive(true);
-        #endif
-        #if UNITY_ANDROID
+#endif
+#if UNITY_ANDROID
             ToggleMultiSelect.SetActive(true);
-        #endif
+#endif
     }
     public Text entityName;
     public Text speed;
@@ -33,7 +34,8 @@ public class UIMgr : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(SelectionMgr.inst.selectedEntity != null) {
+        if (SelectionMgr.inst.selectedEntity != null)
+        {
             Entity ent = SelectionMgr.inst.selectedEntity;
             entityName.text = ent.gameObject.name;
             speed.text = ent.speed.ToString("F2") + " m/s";
@@ -46,5 +48,11 @@ public class UIMgr : MonoBehaviour
             isActive = ToggleMultiSelect.GetComponent<Toggle>().isOn;
         else
             isActive = false;
+
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            Debug.Log("Toggling UI");
+            SceneSelectionCanvas.SetActive(!SceneSelectionCanvas.activeInHierarchy);
+        }
     }
 }
