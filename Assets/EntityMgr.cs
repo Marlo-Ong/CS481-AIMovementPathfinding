@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -15,6 +16,27 @@ public class EntityMgr : MonoBehaviour
         }
     }
 
+    private void Start()
+    {
+        GameMgr.OnGameStarted += this.OnGameStarted;
+        GameMgr.OnGameStopped += () => this.DestroyAllEntities();
+    }
+
+    private void OnGameStarted()
+    {
+        int numEntities = GameMgr.Mode switch
+        {
+            Mode.WayPointGeneration => 1,
+            Mode.SingleEntityWaypointFollow => 5,
+            Mode.GroupMovementPotentialField => 10,
+            Mode.AStarPotentialField => 10,
+            _ => 0
+        };
+
+        for (int i = 0; i < numEntities; i++)
+            CreateEntity(EntityType.TugBoat, Vector3.zero, Vector3.zero);
+    }
+
     public GameObject movableEntitiesRoot;
     public List<GameObject> entityPrefabs;
     public GameObject entitiesRoot;
@@ -25,13 +47,14 @@ public class EntityMgr : MonoBehaviour
     public Entity CreateEntity(EntityType et, Vector3 position, Vector3 eulerAngles)
     {
         Entity entity = null;
-        GameObject entityPrefab = entityPrefabs.Find(x => (x.GetComponent<Entity>().entityType == et));
+        GameObject entityPrefab = entityPrefabs.Find(x => x.GetComponent<Entity>().entityType == et);
         if (entityPrefab != null)
         {
             GameObject entityGo = Instantiate(entityPrefab, position, Quaternion.Euler(eulerAngles), entitiesRoot.transform);
             if (entityGo != null)
             {
                 entity = entityGo.GetComponent<Entity>();
+                entity.isSelected = false;
                 entityGo.name = et.ToString() + entityId++;
                 entities.Add(entity);
             }
@@ -45,18 +68,13 @@ public class EntityMgr : MonoBehaviour
             Destroy(entity.gameObject);
     }
 
-
-    // Start is called before the first frame update
-    void Start()
+    public void DestroyAllEntities()
     {
-
+        for (int i = entities.Count - 1; i >= 0; i--)
+        {
+            var entity = entities[i];
+            entities.RemoveAt(i);
+            Destroy(entity.gameObject);
+        }
     }
-
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
-
-
 }

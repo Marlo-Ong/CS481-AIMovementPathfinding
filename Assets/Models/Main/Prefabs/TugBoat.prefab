@@ -90,7 +90,7 @@ MonoBehaviour:
   desiredSpeed: 0
   heading: 0
   desiredHeading: 0
-  acceleration: 1
+  acceleration: 5
   turnRate: 30
   maxSpeed: 20
   minSpeed: 0

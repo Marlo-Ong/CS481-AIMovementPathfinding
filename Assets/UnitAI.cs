@@ -49,7 +49,6 @@ public class UnitAI : MonoBehaviour
 
     public void AddCommand(Command c)
     {
-        c.Init();
         commands.Add(c);
         if (c is Intercept)
             intercepts.Add(c as Intercept);
@@ -57,6 +56,7 @@ public class UnitAI : MonoBehaviour
             ;
         else
             moves.Add(c as Move);
+        c.Init();
     }
 
     public void SetCommand(Command c)

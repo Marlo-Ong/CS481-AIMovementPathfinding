@@ -88,7 +88,13 @@ public class AStar : IAlgorithm
 
     public List<Vector3> FindPath(Vector3 startPos, Vector3 targetPos)
     {
-        this.grid = new Grid(100, 100, Vector3.zero);
+        int width = Mathf.CeilToInt(GameMgr.inst.endPosition.x);
+        int length = Mathf.CeilToInt(GameMgr.inst.endPosition.z);
+
+        if (targetPos.x > width || targetPos.z > length)
+            return new List<Vector3>();
+
+        this.grid = new Grid(width, length, Vector3.zero);
         Node start = this.grid.GetNode(startPos);
         Node target = this.grid.GetNode(targetPos);
 
@@ -113,7 +119,7 @@ public class AStar : IAlgorithm
             // Evaluate non-closed, non-obstacle neighbors
             foreach (Node neighbor in this.GetNeighbors(current))
             {
-                if (!neighbor.walkable || this.closedSet.Contains(neighbor))
+                if (neighbor == null || !neighbor.walkable || this.closedSet.Contains(neighbor))
                     continue;
 
                 // Check if this node needs to be added/updated (unexplored node, or found lower g-cost)
@@ -140,7 +146,7 @@ public class AStar : IAlgorithm
         List<Vector3> path = new List<Vector3>();
         Node current = end;
 
-        while (current != start)
+        while (current != null && current != start)
         {
             path.Add(current);
             current = current.parent;

@@ -14,13 +14,13 @@ public class LineMgr : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        lines.Clear();
+        GameMgr.OnGameStopped += () => this.DestroyAllLines();
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+
     }
 
     public LineRenderer MovePrefab;
@@ -71,11 +71,21 @@ public class LineMgr : MonoBehaviour
     public void DestroyLR(LineRenderer lr)
     {
         tmp = null;
-        if (lines.Contains(lr)) {
+        if (lines.Contains(lr))
+        {
             tmp = lr.gameObject;
             lines.Remove(lr);
         }
         Destroy(lr.gameObject);
+    }
 
+    public void DestroyAllLines()
+    {
+        for (int i = lines.Count - 1; i >= 0; i--)
+        {
+            var line = lines[i];
+            lines.RemoveAt(i);
+            Destroy(line.gameObject);
+        }
     }
 }

@@ -2,6 +2,19 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum Environment
+{
+    Circles20,
+    Circles30,
+    Circles100,
+    Rectangles20,
+    Rectangles30,
+    Rectangles100,
+    AStar,
+    Office,
+    Empty,
+}
+
 public class EnvironmentMgr : MonoBehaviour
 {
     private static EnvironmentMgr inst;
@@ -44,7 +57,8 @@ public class EnvironmentMgr : MonoBehaviour
 
         this.circlePool = new(capacity: 100);
         this.rectanglePool = new(capacity: 100);
-        // GameMgr.OnGameStarted += () => this.CreateEnvironment(GameMgr.Environment);
+        GameMgr.OnGameStarted += () => CreateEnvironment(GameMgr.Environment);
+        GameMgr.OnGameStopped += () => CreateEnvironment(Environment.Empty);
     }
 
     public static void CreateEnvironment(Environment environment)
@@ -54,6 +68,18 @@ public class EnvironmentMgr : MonoBehaviour
 
     private void CreateEnvironmentImpl(Environment environment)
     {
+        if (environment == Environment.Empty)
+        {
+            this.officeEnvironment.SetActive(false);
+            this.aStarEnvironment.SetActive(false);
+
+            foreach (var obstacle in this.circlePool)
+                obstacle.SetActive(false);
+
+            foreach (var obstacle in this.rectanglePool)
+                obstacle.SetActive(false);
+        }
+
         // A*
         if (environment == Environment.AStar)
         {
