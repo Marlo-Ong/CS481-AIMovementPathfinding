@@ -109,10 +109,10 @@ public class EnvironmentMgr : MonoBehaviour
             }
 
             // Create or reuse pooled objects.
-            GameObject instance = i < pool.Count
-                ? pool[i]
-                : this.CreateObstacle(obstaclePrefab);
+            if (i >= pool.Count)
+                pool.Add(this.CreateObstacle(obstaclePrefab));
 
+            GameObject instance = pool[i];
             instance.SetActive(true);
 
             instance.transform.position = this.obstaclePositionRange.GetRandom();

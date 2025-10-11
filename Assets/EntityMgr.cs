@@ -9,7 +9,8 @@ public class EntityMgr : MonoBehaviour
     {
         inst = this;
         entities = new List<Entity>();
-        foreach(Entity ent in movableEntitiesRoot.GetComponentsInChildren<Entity>()) {
+        foreach (Entity ent in movableEntitiesRoot.GetComponentsInChildren<Entity>())
+        {
             entities.Add(ent);
         }
     }
@@ -25,9 +26,11 @@ public class EntityMgr : MonoBehaviour
     {
         Entity entity = null;
         GameObject entityPrefab = entityPrefabs.Find(x => (x.GetComponent<Entity>().entityType == et));
-        if (entityPrefab != null) {
+        if (entityPrefab != null)
+        {
             GameObject entityGo = Instantiate(entityPrefab, position, Quaternion.Euler(eulerAngles), entitiesRoot.transform);
-            if (entityGo != null) {
+            if (entityGo != null)
+            {
                 entity = entityGo.GetComponent<Entity>();
                 entityGo.name = et.ToString() + entityId++;
                 entities.Add(entity);
@@ -36,17 +39,23 @@ public class EntityMgr : MonoBehaviour
         return entity;
     }
 
+    public void DestroyEntity(Entity entity)
+    {
+        if (this.entities.Remove(entity))
+            Destroy(entity.gameObject);
+    }
+
 
     // Start is called before the first frame update
     void Start()
     {
-        
+
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+
     }
 
 

@@ -20,7 +20,6 @@ public class UnitAI : MonoBehaviour
     {
         if (commands.Count > 0)
         {
-            Debug.Log(commands[0].ToString());
             if (commands[0].IsDone())
             {
                 StopAndRemoveCommand(0);

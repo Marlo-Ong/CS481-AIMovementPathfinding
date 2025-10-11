@@ -35,6 +35,7 @@ public class GameMgr : MonoBehaviour
     public static GameMgr inst;
     private GameInputs input;
     private bool isGameActive;
+    private Entity entity = null;
 
     private void Awake()
     {
@@ -69,13 +70,19 @@ public class GameMgr : MonoBehaviour
 
     public static void StartGame()
     {
+        if (inst.isGameActive)
+            StopGame();
+
         inst.isGameActive = true;
 
         EnvironmentMgr.CreateEnvironment(Environment);
 
-        Entity entity = EntityMgr.inst.CreateEntity(EntityType.TugBoat, Vector3.zero, Vector3.zero);
-        entity.isSelected = false;
-        inst.StartCoroutine(inst.StartAStar(entity, entity.GetComponent<UnitAI>()));
+        if (inst.entity != null)
+            EntityMgr.inst.DestroyEntity(inst.entity);
+
+        inst.entity = EntityMgr.inst.CreateEntity(EntityType.TugBoat, Vector3.zero, Vector3.zero);
+        inst.entity.isSelected = false;
+        inst.StartCoroutine(inst.StartAStar(inst.entity, inst.entity.GetComponent<UnitAI>()));
 
         OnGameStarted?.Invoke();
     }
@@ -87,11 +94,14 @@ public class GameMgr : MonoBehaviour
         AStar aStar = new();
         var path = aStar.FindPath(Vector3.zero, new Vector3(80, 0, 50));
         foreach (var node in path)
-            uai.SetCommand(new Move(ent, new Vector3(node.x, 0, node.y)));
+            uai.AddCommand(new Move(ent, node));
     }
 
     public static void StopGame()
     {
+        if (!inst.isGameActive)
+            return;
+
         inst.isGameActive = false;
         OnGameStopped?.Invoke();
     }
