@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -26,7 +26,7 @@ public class Potential
     /*public Potential(Entity own, GameObject obst)
     {
         ownship = own;
-        
+
     }
     */
     void InitDefaults()
@@ -108,7 +108,7 @@ public class DistanceMgr : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-
+        GameMgr.OnGameStarted += () => Initialize();
     }
 
     public bool isInitialized = false;
@@ -191,10 +191,10 @@ public class DistanceMgr : MonoBehaviour
         {
             Initialize();
         }
-        else if (!isInitialized) 
+        else if (!isInitialized)
         {
             Initialize();
-        }  
+        }
     }
 
     public List<Potential> selectedEntityPotentials; // For debugging

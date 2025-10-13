@@ -44,8 +44,8 @@ public class EnvironmentMgr : MonoBehaviour
 
 
     [Header("Preset Environments")]
-    [SerializeField] private GameObject startArea;
-    [SerializeField] private GameObject targetArea;
+    public GameObject startArea;
+    public GameObject targetArea;
     [SerializeField] private GameObject aStarEnvironment;
     [SerializeField] private GameObject officeEnvironment;
 
@@ -59,7 +59,11 @@ public class EnvironmentMgr : MonoBehaviour
 
         this.circlePool = new(capacity: 100);
         this.rectanglePool = new(capacity: 100);
-        GameMgr.OnGameStarted += () => CreateEnvironment(GameMgr.Environment);
+        GameMgr.OnGameStarted += () =>
+        {
+            CreateEnvironment(GameMgr.Environment);
+            EntityMgr.inst.OnGameStarted();
+        };
         GameMgr.OnGameStopped += () => CreateEnvironment(Environment.Empty);
         this.officeEnvironment.SetActive(false);
         this.aStarEnvironment.SetActive(false);
@@ -82,6 +86,11 @@ public class EnvironmentMgr : MonoBehaviour
 
             foreach (var obstacle in this.rectanglePool)
                 obstacle.SetActive(false);
+
+            this.startArea.transform.localPosition = new Vector3(0, -100, 0);
+            this.targetArea.transform.localPosition = new Vector3(0, -100, 0);
+
+            return;
         }
 
         // A*
@@ -89,6 +98,9 @@ public class EnvironmentMgr : MonoBehaviour
         {
             this.officeEnvironment.SetActive(false);
             this.aStarEnvironment.SetActive(true);
+
+            this.startArea.transform.localPosition = new Vector3(142, 0, 180);
+            this.targetArea.transform.localPosition = new Vector3(359, 0, 180);
             return;
         }
 
@@ -99,6 +111,9 @@ public class EnvironmentMgr : MonoBehaviour
             this.officeEnvironment.SetActive(true);
             return;
         }
+
+        this.startArea.transform.localPosition = new Vector3(45, 0, 0);
+        this.targetArea.transform.localPosition = new Vector3(400, 0, 400);
 
         // Obstacle field
         int obstacleAmount = environment switch

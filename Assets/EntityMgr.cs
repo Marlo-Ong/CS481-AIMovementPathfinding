@@ -18,12 +18,14 @@ public class EntityMgr : MonoBehaviour
 
     private void Start()
     {
-        GameMgr.OnGameStarted += this.OnGameStarted;
+        // GameMgr.OnGameStarted += this.OnGameStarted;
         GameMgr.OnGameStopped += () => this.DestroyAllEntities();
     }
 
-    private void OnGameStarted()
+    public void OnGameStarted()
     {
+        Physics.SyncTransforms();
+
         int numEntities = GameMgr.Mode switch
         {
             Mode.WayPointGeneration => 1,
@@ -35,16 +37,39 @@ public class EntityMgr : MonoBehaviour
 
         Vector3 startPos = GameMgr.Environment switch
         {
-            Environment.AStar => new Vector3(150, 0, 162),
             Environment.Office => new Vector3(10, 0, 175),
             _ => Vector3.zero
         };
 
         for (int i = 0; i < numEntities; i++)
         {
-            Vector3 newStart = startPos + new Vector3(5 * i, 0, 5 * i);
-            CreateEntity(EntityType.TugBoat, newStart, Vector3.zero);
+            Vector3 newStart;
+
+            // Create entities in a line
+            if (GameMgr.Environment == Environment.Office)
+                newStart = startPos + new Vector3(5 * i, 0, 5 * i);
+
+            // Use start area
+            else
+                newStart = GetRandomPointInBounds(EnvironmentMgr.inst.startArea.GetComponent<Collider>());
+
+            // Random rotation
+            Vector3 rotation = new Vector3(0, UnityEngine.Random.Range(0, 360), 0);
+
+            CreateEntity(EntityType.TugBoat, newStart, rotation);
         }
+    }
+
+    private Vector3 GetRandomPointInBounds(Collider col)
+    {
+        Bounds b = col.bounds;
+
+        // Pick random coordinates within the bounding box
+        float x = UnityEngine.Random.Range(b.min.x, b.max.x);
+        float y = UnityEngine.Random.Range(b.min.y, b.max.y);
+        float z = UnityEngine.Random.Range(b.min.z, b.max.z);
+
+        return new Vector3(x, y, z);
     }
 
     public GameObject movableEntitiesRoot;
@@ -64,6 +89,7 @@ public class EntityMgr : MonoBehaviour
             if (entityGo != null)
             {
                 entity = entityGo.GetComponent<Entity>();
+                entity.desiredHeading = eulerAngles.y;
                 entity.isSelected = false;
                 entityGo.name = et.ToString() + entityId++;
                 entities.Add(entity);
