@@ -3,5 +3,5 @@ using System.Collections.Generic;
 
 public interface IAlgorithm
 {
-    public List<Vector3> FindPath(Vector3 startPos, Vector3 targetPos);
+    public List<Node> FindPath((int x, int y) startPos, (int x, int y) targetPos);
 }
