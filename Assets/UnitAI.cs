@@ -85,11 +85,11 @@ public class UnitAI : MonoBehaviour
     {
         if (current.line != null)
         {
-            current.line.gameObject.SetActive(true);
             if (prior == null)
                 current.line.SetPosition(0, entity.position);
             else
                 current.line.SetPosition(0, prior.line.GetPosition(1));
+            current.line.gameObject.SetActive(true);
 
             if (current is Intercept)
             { //Most specific

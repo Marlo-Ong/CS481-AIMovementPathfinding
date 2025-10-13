@@ -15,26 +15,48 @@ public class LineMgr : MonoBehaviour
     void Start()
     {
         GameMgr.OnGameStopped += () => this.DestroyAllLines();
+
+        this.inactiveLines = new();
+        for (int i = 0; i < initialPoolSize; i++)
+            this.CreatePooledLine();
+
+        this.activeLines = new();
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
+    public int initialPoolSize;
+    private Stack<LineRenderer> inactiveLines;
+    private HashSet<LineRenderer> activeLines;
 
     public LineRenderer MovePrefab;
     public LineRenderer FollowPrefab;
     public LineRenderer InterceptPrefab;
     public LineRenderer PotentialPrefab;
 
-    public List<LineRenderer> lines = new List<LineRenderer>();
+    private LineRenderer GetPooledLine()
+    {
+        if (!this.inactiveLines.TryPop(out LineRenderer lr))
+        {
+            this.CreatePooledLine();
+            lr = this.inactiveLines.Pop();
+        }
+        this.activeLines.Add(lr);
+
+        return lr;
+    }
+
+    private LineRenderer CreatePooledLine()
+    {
+        LineRenderer lr = Instantiate(MovePrefab, parent: transform);
+        lr.gameObject.SetActive(false);
+        this.inactiveLines.Push(lr);
+        return lr;
+    }
+
     public LineRenderer CreateMoveLine(Vector3 p1, Vector3 p2)
     {
-        LineRenderer lr = Instantiate<LineRenderer>(MovePrefab, transform);
+        LineRenderer lr = GetPooledLine();
         lr.SetPosition(0, p1);
         lr.SetPosition(1, p2);
-        lines.Add(lr);
         return lr;
     }
 
@@ -43,7 +65,6 @@ public class LineMgr : MonoBehaviour
         LineRenderer lr = Instantiate<LineRenderer>(PotentialPrefab, transform);
         lr.SetPosition(0, p1);
         lr.SetPosition(1, Vector3.zero);
-        lines.Add(lr);
         return lr;
     }
 
@@ -53,7 +74,6 @@ public class LineMgr : MonoBehaviour
         lr.SetPosition(0, p1);
         lr.SetPosition(1, p2);
         lr.SetPosition(2, p3);
-        lines.Add(lr);
         return lr;
     }
 
@@ -63,29 +83,26 @@ public class LineMgr : MonoBehaviour
         lr.SetPosition(0, p1);
         lr.SetPosition(1, p2);
         lr.SetPosition(2, p3);
-        lines.Add(lr);
         return lr;
     }
 
     public GameObject tmp;
     public void DestroyLR(LineRenderer lr)
     {
-        tmp = null;
-        if (lines.Contains(lr))
+        if (this.activeLines.Remove(lr))
         {
-            tmp = lr.gameObject;
-            lines.Remove(lr);
+            lr.gameObject.SetActive(false);
+            this.inactiveLines.Push(lr);
         }
-        Destroy(lr.gameObject);
     }
 
     public void DestroyAllLines()
     {
-        for (int i = lines.Count - 1; i >= 0; i--)
+        foreach (var line in this.activeLines)
         {
-            var line = lines[i];
-            lines.RemoveAt(i);
-            Destroy(line.gameObject);
+            line.gameObject.SetActive(false);
+            this.inactiveLines.Push(line);
         }
+        this.activeLines.Clear();
     }
 }
