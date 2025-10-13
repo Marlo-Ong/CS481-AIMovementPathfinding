@@ -61,6 +61,37 @@ public class Move : Command
                 //repulsivePotential += p.diff;
             }
         }
+
+        foreach (GameObject obstacle in EnvironmentMgr.inst.circlePool)
+        {
+            if (obstacle.activeInHierarchy)
+            {
+                int distance;
+                Vector3 closestPoint = obstacle.GetComponent<SphereCollider>().ClosestPointOnBounds(entity.position);
+                Vector3 displacement = closestPoint - entity.position;
+                distance = (int)displacement.magnitude;
+                Vector3 direction = displacement.normalized;
+                if (distance < AIMgr.inst.potentialDistanceThreshold)
+                {
+                    repulsivePotential += direction * entity.mass * AIMgr.inst.repulsiveCoefficient * Mathf.Pow(distance, AIMgr.inst.repulsiveExponent);
+                }
+            }
+        }
+        foreach(GameObject obstacle in EnvironmentMgr.inst.rectanglePool)
+        {
+            if(obstacle.activeInHierarchy)
+            {
+                int distance;
+                Vector3 closestPoint = obstacle.GetComponent<BoxCollider>().ClosestPointOnBounds(entity.position);
+                Vector3 displacement = closestPoint - entity.position;
+                distance = (int)displacement.magnitude;
+                Vector3 direction = displacement.normalized;
+                if(distance < AIMgr.inst.potentialDistanceThreshold)
+                {
+                    repulsivePotential += direction * entity.mass * AIMgr.inst.repulsiveCoefficient * Mathf.Pow(distance, AIMgr.inst.repulsiveExponent);
+                }
+            }
+        }
         //repulsivePotential *= repulsiveCoefficient * Mathf.Pow(repulsivePotential.magnitude, repulsiveExponent);
         attractivePotential = movePosition - entity.position;
         Vector3 tmp = attractivePotential.normalized;
