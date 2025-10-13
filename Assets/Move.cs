@@ -56,8 +56,8 @@ public class Move : Command
             p = DistanceMgr.inst.GetPotential(entity, ent);
             if (p.distance < AIMgr.inst.potentialDistanceThreshold)
             {
-                repulsivePotential += p.direction * entity.mass *
-                    AIMgr.inst.repulsiveCoefficient * Mathf.Pow(p.diff.magnitude, AIMgr.inst.repulsiveExponent);
+                repulsivePotential += Vector3.Min(p.direction * entity.mass *
+                    AIMgr.inst.repulsiveCoefficient * Mathf.Pow(p.diff.magnitude, AIMgr.inst.repulsiveExponent), new Vector3(1000, 1000, 100));
                 //repulsivePotential += p.diff;
             }
         }
@@ -66,14 +66,15 @@ public class Move : Command
         {
             if (obstacle.activeInHierarchy)
             {
-                int distance;
+                float distance;
                 Vector3 closestPoint = obstacle.GetComponent<SphereCollider>().ClosestPointOnBounds(entity.position);
                 Vector3 displacement = closestPoint - entity.position;
-                distance = (int)displacement.magnitude;
+                distance = displacement.magnitude;
                 Vector3 direction = displacement.normalized;
                 if (distance < AIMgr.inst.potentialDistanceThreshold)
                 {
-                    repulsivePotential += direction * entity.mass * AIMgr.inst.repulsiveCoefficient * Mathf.Pow(distance, AIMgr.inst.repulsiveExponent);
+                    repulsivePotential += Vector3.Min(direction * entity.mass * AIMgr.inst.repulsiveCoefficient * Mathf.Pow(distance, AIMgr.inst.repulsiveExponent),
+                                                        new Vector3(1000, 1000, 1000));
                 }
             }
         }
@@ -81,14 +82,15 @@ public class Move : Command
         {
             if(obstacle.activeInHierarchy)
             {
-                int distance;
+                float distance;
                 Vector3 closestPoint = obstacle.GetComponent<BoxCollider>().ClosestPointOnBounds(entity.position);
                 Vector3 displacement = closestPoint - entity.position;
-                distance = (int)displacement.magnitude;
+                distance = displacement.magnitude;
                 Vector3 direction = displacement.normalized;
                 if(distance < AIMgr.inst.potentialDistanceThreshold)
                 {
-                    repulsivePotential += direction * entity.mass * AIMgr.inst.repulsiveCoefficient * Mathf.Pow(distance, AIMgr.inst.repulsiveExponent);
+                    repulsivePotential += Vector3.Min(direction * entity.mass * AIMgr.inst.repulsiveCoefficient * Mathf.Pow(distance, AIMgr.inst.repulsiveExponent),
+                                                        new Vector3(1000, 1000, 1000));
                 }
             }
         }

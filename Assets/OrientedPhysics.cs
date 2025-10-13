@@ -30,9 +30,9 @@ public class OrientedPhysics : MonoBehaviour
         if (Utils.ApproximatelyEqual(entity.heading, entity.desiredHeading)) {
             ;
         } else if (Utils.AngleDiffPosNeg(entity.desiredHeading, entity.heading) > 0) {
-            entity.heading += entity.turnRate * Time.deltaTime;
+            entity.heading += Mathf.Max(entity.turnRate, 50) * Time.deltaTime;
         } else if (Utils.AngleDiffPosNeg(entity.desiredHeading, entity.heading) < 0) {
-            entity.heading -= entity.turnRate * Time.deltaTime;
+            entity.heading -= Mathf.Max(entity.turnRate, 50) * Time.deltaTime;
         }
         entity.heading = Utils.Degrees360(entity.heading);
         //
