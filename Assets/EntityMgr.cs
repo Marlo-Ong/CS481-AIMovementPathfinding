@@ -33,8 +33,15 @@ public class EntityMgr : MonoBehaviour
             _ => 0
         };
 
+        Vector3 startPos = GameMgr.Environment switch
+        {
+            Environment.AStar => new Vector3(205, 0, 205),
+            Environment.Office => new Vector3(0, 0, 0),
+            _ => Vector3.zero
+        };
+
         for (int i = 0; i < numEntities; i++)
-            CreateEntity(EntityType.TugBoat, Vector3.zero, Vector3.zero);
+            CreateEntity(EntityType.TugBoat, startPos, Vector3.zero);
     }
 
     public GameObject movableEntitiesRoot;
