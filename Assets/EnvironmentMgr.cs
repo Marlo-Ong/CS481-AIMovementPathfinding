@@ -161,37 +161,10 @@ public class EnvironmentMgr : MonoBehaviour
                 pool.Add(this.CreateObstacle(obstaclePrefab));
 
             GameObject instance = pool[i];
-            this.SetRandomTransform(instance.transform, uniform: obstaclePrefab == this.circleObstacle);
+            instance.transform.position = this.obstaclePositionRange.GetRandom();
+            instance.transform.localScale = this.obstacleScaleRange.GetRandom(uniform: obstaclePrefab == this.circleObstacle);
             instance.SetActive(true);
         }
-    }
-
-    private void SetRandomTransform(Transform t, bool uniform = false)
-    {
-        var obstacleCollider = t.GetComponent<Collider>();
-        var startCollider = this.startArea.GetComponent<Collider>();
-        var targetCollider = this.targetArea.GetComponent<Collider>();
-
-        do
-        {
-            t.position = this.obstaclePositionRange.GetRandom();
-            t.localScale = this.obstacleScaleRange.GetRandom(uniform: uniform);
-        }
-        while (IsOverlapping(obstacleCollider, startCollider, targetCollider));
-    }
-
-    private bool IsOverlapping(Collider obstacle, Collider start, Collider target)
-    {
-        Physics.SyncTransforms();
-        Bounds bounds = obstacle.bounds;
-        Collider[] overlaps = Physics.OverlapBox(bounds.center, bounds.extents, obstacle.transform.rotation);
-
-        foreach (var col in overlaps)
-        {
-            if (col == start || col == target)
-                return true;
-        }
-        return false;
     }
 
     private GameObject CreateObstacle(GameObject obstaclePrefab)

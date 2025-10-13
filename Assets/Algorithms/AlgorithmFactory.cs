@@ -47,6 +47,21 @@ public class Grid
                 walkable[x, y] = isWalkable;
             }
         }
+
+        ResetGrid();
+    }
+
+    public void ResetGrid()
+    {
+        for (int x = 0; x < this.sizeX; x++)
+        {
+            for (int y = 0; y < this.sizeY; y++)
+            {
+                nodes[x, y].gCost = int.MaxValue;
+                nodes[x, y].hCost = int.MaxValue;
+                nodes[x, y].parent = null;
+            }
+        }
     }
 
     public Node GetNode((int x, int y) pos)
@@ -139,19 +154,26 @@ public static class AlgorithmFactory
         IAlgorithm algorithm = GetAlgorithm(type);
 
         // World to grid
-        int startX = Mathf.FloorToInt(start.x / grid.cellSize);
-        int startY = Mathf.FloorToInt(start.z / grid.cellSize);
-        int targetX = Mathf.FloorToInt(target.x / grid.cellSize);
-        int targetY = Mathf.FloorToInt(target.z / grid.cellSize);
+        int startX = Mathf.FloorToInt(start.x / GameMgr.inst.gridCellSize);
+        int startY = Mathf.FloorToInt(start.z / GameMgr.inst.gridCellSize);
+        int targetX = Mathf.FloorToInt(target.x / GameMgr.inst.gridCellSize);
+        int targetY = Mathf.FloorToInt(target.z / GameMgr.inst.gridCellSize);
 
-        var nodes = await Task.Run(() => algorithm.FindPath((startX, startY), (targetX, targetY)), cts.Token);
+        var findPathTask = Task.Run(() => algorithm.FindPath((startX, startY), (targetX, targetY)), cts.Token);
+        var timeoutTask = Task.Delay(2000, cts.Token);
 
+        var completed = await Task.WhenAny(findPathTask, timeoutTask);
+        if (completed == timeoutTask)
+            return new List<Vector3>();
+
+        var nodes = await findPathTask;
         var result = new List<Vector3>();
+
         foreach (var node in nodes)
         {
             // Grid to world
-            float worldX = node.x * grid.cellSize + grid.cellSize * 0.5f;
-            float worldZ = node.y * grid.cellSize + grid.cellSize * 0.5f;
+            float worldX = node.x * GameMgr.inst.gridCellSize + GameMgr.inst.gridCellSize * 0.5f;
+            float worldZ = node.y * GameMgr.inst.gridCellSize + GameMgr.inst.gridCellSize * 0.5f;
             result.Add(new Vector3(worldX, 0, worldZ));
         }
 
@@ -163,20 +185,7 @@ public static class AlgorithmFactory
         int width = Mathf.CeilToInt(GameMgr.inst.endPosition.x);
         int length = Mathf.CeilToInt(GameMgr.inst.endPosition.z);
 
-        // Try to use the cached grid. Otherwise, create the grid.
-        if (width != prevWidth || length != prevLength)
-        {
-            prevLength = width;
-            prevLength = length;
-
-            grid = new Grid(width, length, cellSize: GameMgr.inst.gridCellSize);
-            aStar = new AStar(grid);
-        }
-
-        return type switch
-        {
-            AlgorithmType.AStar => aStar,
-            _ => null
-        };
+        var grid = new Grid(width, length, cellSize: GameMgr.inst.gridCellSize);
+        return new AStar(grid);
     }
 }
