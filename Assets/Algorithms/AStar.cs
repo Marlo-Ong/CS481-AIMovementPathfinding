@@ -1,105 +1,29 @@
-using UnityEngine;
 using System.Collections.Generic;
-using System;
+using Unity.Mathematics;
 
 public class AStar : IAlgorithm
 {
-    private class Grid
-    {
-        public int sizeX { get; private set; }
-        public int sizeY { get; private set; }
-        private Node[,] nodes;
-        private Vector3 origin;
-        LayerMask obstacleLayer = LayerMask.GetMask("Obstacle");
-
-        public Grid(int sizeX, int sizeY, Vector3 origin)
-        {
-            this.sizeX = sizeX + 1;
-            this.sizeY = sizeY + 1;
-            this.nodes = new Node[this.sizeX, this.sizeY];
-
-            for (int x = 0; x < this.sizeX; x++)
-            {
-                for (int y = 0; y < this.sizeY; y++)
-                {
-                    Vector3 worldPos = new Vector3(x, 0, y);
-                    this.nodes[x, y] = new Node(x, y, walkable: IsWalkable(worldPos));
-                }
-            }
-        }
-
-        public Node GetNode(Vector3 worldPos)
-        {
-            return this.GetNode((int)worldPos.x, (int)worldPos.z);
-        }
-
-        public Node GetNode(Vector2Int coordinates)
-        {
-            return this.GetNode(coordinates.x, coordinates.y);
-        }
-
-        public Node GetNode(int x, int y)
-        {
-            bool isValid = x >= 0 && y >= 0 && x < this.sizeX && y < this.sizeY;
-            return isValid ? this.nodes[x, y] : null;
-        }
-
-        public bool IsWalkable(Vector3 position)
-        {
-            bool hit = Physics.CheckSphere(position + new Vector3(0.5f, 0, 0.5f), radius: 1f, layerMask: obstacleLayer);
-            return !hit;
-        }
-    }
-
-    public class Node : IEquatable<Node>
-    {
-        public Node parent;
-        public int gCost;
-        public int hCost;
-        public int fCost => this.gCost + this.hCost;
-
-        public bool walkable;
-        public Vector2Int coordinates;
-        public int x => this.coordinates.x;
-        public int y => this.coordinates.y;
-
-        public Node(int x, int y, bool walkable)
-        {
-            this.coordinates = new(x, y);
-            this.walkable = walkable;
-        }
-
-        public bool Equals(Node other)
-        {
-            return this.coordinates == other.coordinates;
-        }
-
-        public override string ToString()
-        {
-            return $"{coordinates}";
-        }
-
-        public static implicit operator Vector3(Node n) => new(n.x, 0, n.y);
-    }
-
     private Grid grid;
     private List<Node> openSet;
     private HashSet<Node> closedSet;
 
-    public List<Vector3> FindPath(Vector3 startPos, Vector3 targetPos)
+    public AStar(Grid grid)
     {
-        int width = Mathf.CeilToInt(GameMgr.inst.endPosition.x);
-        int length = Mathf.CeilToInt(GameMgr.inst.endPosition.z);
-
-        if (targetPos.x > width || targetPos.z > length)
-            return new List<Vector3>();
-
-        this.grid = new Grid(width, length, Vector3.zero);
-        Node start = this.grid.GetNode(startPos);
-        Node target = this.grid.GetNode(targetPos);
-
+        this.grid = grid;
         this.openSet = new();
         this.closedSet = new();
+    }
+
+    public List<Node> FindPath((int x, int y) startPos, (int x, int y) targetPos)
+    {
+        if (targetPos.x > this.grid.sizeX || targetPos.y > this.grid.sizeY)
+            return new List<Node>();
+
+        this.openSet.Clear();
+        this.closedSet.Clear();
+
+        Node start = this.grid.GetNode(startPos);
+        Node target = this.grid.GetNode(targetPos);
 
         this.openSet.Add(start);
 
@@ -141,9 +65,9 @@ public class AStar : IAlgorithm
         return this.RetracePath(start, target);
     }
 
-    private List<Vector3> RetracePath(Node start, Node end)
+    private List<Node> RetracePath(Node start, Node end)
     {
-        List<Vector3> path = new List<Vector3>();
+        List<Node> path = new();
         Node current = end;
 
         while (current != null && current != start)
@@ -163,10 +87,10 @@ public class AStar : IAlgorithm
         // to get to the same axis as B, then use straight-line distance
         //      (with simplified length floor(10 * 1))
 
-        var diff = new Vector2Int(Mathf.Abs(b.x - a.x), Mathf.Abs(b.y - a.y));
-        return diff.x > diff.y
-            ? 14 * diff.y + 10 * (diff.x - diff.y)
-            : 14 * diff.x + 10 * (diff.y - diff.x);
+        (int x, int y) = (math.abs(b.x - a.x), math.abs(b.y - a.y));
+        return x > y
+            ? 14 * y + 10 * (x - y)
+            : 14 * x + 10 * (y - x);
     }
 
     private List<Node> GetNeighbors(Node node)

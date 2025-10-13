@@ -85,7 +85,7 @@ public class UnitAI : MonoBehaviour
     {
         if (current.line != null)
         {
-            current.line.gameObject.SetActive(entity.isSelected);
+            current.line.gameObject.SetActive(true);
             if (prior == null)
                 current.line.SetPosition(0, entity.position);
             else

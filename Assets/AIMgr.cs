@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -44,36 +45,19 @@ public class AIMgr : MonoBehaviour
                 //Debug.DrawLine(Camera.main.transform.position, hit.point, Color.yellow, 2); //for debugging
                 Vector3 pos = hit.point;
                 pos.y = 0;
-                Entity ent = FindClosestEntInRadius(pos, rClickRadiusSq);
-                if (ent == null)
-                {
-                    HandleMove(SelectionMgr.inst.selectedEntities, pos);
-                }
-                else
-                {
-                    if (interceptDown)
-                        HandleIntercept(SelectionMgr.inst.selectedEntities, ent);
-                    else
-                        HandleFollow(SelectionMgr.inst.selectedEntities, ent);
-                }
-            }
-            else
-            {
-                // Debug.DrawRay(Camera.main.transform.position, Camera.main.transform.TransformDirection(Vector3.forward) * 1000, Color.white, 2);
+                _ = HandleMove(SelectionMgr.inst.selectedEntities, pos);
             }
         }
     }
 
-    public void HandleMove(List<Entity> entities, Vector3 target)
+    public async Task HandleMove(List<Entity> entities, Vector3 target)
     {
-        IAlgorithm algorithm = AlgorithmFactory.GetAlgorithm(GameMgr.inst.algorithmType);
-
         foreach (Entity entity in entities)
         {
             UnitAI uai = entity.GetComponent<UnitAI>();
 
             uai.StopAndRemoveAllCommands();
-            var path = algorithm.FindPath(entity.position, target);
+            var path = await AlgorithmFactory.FindPathAsync(GameMgr.inst.algorithmType, entity.position, target);
             foreach (var point in path)
                 uai.AddCommand(new Move(entity, point));
         }
@@ -107,7 +91,6 @@ public class AIMgr : MonoBehaviour
             UnitAI uai = entity.GetComponent<UnitAI>();
             AddOrSet(intercept, uai);
         }
-
     }
 
     public float rClickRadiusSq = 10000;
