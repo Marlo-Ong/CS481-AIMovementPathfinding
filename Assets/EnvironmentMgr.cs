@@ -59,6 +59,8 @@ public class EnvironmentMgr : MonoBehaviour
         this.rectanglePool = new(capacity: 100);
         GameMgr.OnGameStarted += () => CreateEnvironment(GameMgr.Environment);
         GameMgr.OnGameStopped += () => CreateEnvironment(Environment.Empty);
+        this.officeEnvironment.SetActive(false);
+        this.aStarEnvironment.SetActive(false);
     }
 
     public static void CreateEnvironment(Environment environment)
@@ -85,38 +87,6 @@ public class EnvironmentMgr : MonoBehaviour
         {
             this.officeEnvironment.SetActive(false);
             this.aStarEnvironment.SetActive(true);
-
-            GameObject officeObPrefab = this.rectangleObstacle;
-            List<GameObject> officeObstacles = this.rectanglePool;
-            if (officeObstacles.Count < 5)
-            {
-                officeObstacles.Add(this.CreateObstacle(officeObPrefab));
-                officeObstacles.Add(this.CreateObstacle(officeObPrefab));
-                officeObstacles.Add(this.CreateObstacle(officeObPrefab));
-                officeObstacles.Add(this.CreateObstacle(officeObPrefab));
-                officeObstacles.Add(this.CreateObstacle(officeObPrefab));
-            }
-            
-            officeObstacles[0].SetActive(true);
-            officeObstacles[0].transform.position = new Vector3(395, 0, 100);
-            officeObstacles[0].transform.localScale = new Vector3(225, 30, 10);
-
-            officeObstacles[1].SetActive(true);
-            officeObstacles[1].transform.position = new Vector3(287, 0, 173);
-            officeObstacles[1].transform.localScale = new Vector3(300, 30, 10);
-            officeObstacles[1].transform.rotation = Quaternion.Euler(new Vector3(0, 90, 0));
-
-            officeObstacles[2].SetActive(true);
-            officeObstacles[2].transform.position = new Vector3(395, 0, 319);
-            officeObstacles[2].transform.localScale = new Vector3(225, 30, 10);
-
-            officeObstacles[3].SetActive(true);
-            officeObstacles[3].transform.position = new Vector3(180, 0, 102);
-            officeObstacles[3].transform.localScale = new Vector3(225, 30, 10);
-
-            officeObstacles[4].SetActive(true);
-            officeObstacles[4].transform.position = new Vector3(174, 0, 318);
-            officeObstacles[4].transform.localScale = new Vector3(225, 30, 10);
             return;
         }
 

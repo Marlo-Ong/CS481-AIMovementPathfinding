@@ -36,7 +36,7 @@ public class EntityMgr : MonoBehaviour
         Vector3 startPos = GameMgr.Environment switch
         {
             Environment.AStar => new Vector3(205, 0, 205),
-            Environment.Office => new Vector3(0, 0, 0),
+            Environment.Office => new Vector3(30, 0, 120),
             _ => Vector3.zero
         };
 
