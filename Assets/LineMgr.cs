@@ -47,6 +47,8 @@ public class LineMgr : MonoBehaviour
     private LineRenderer CreatePooledLine()
     {
         LineRenderer lr = Instantiate(MovePrefab, parent: transform);
+        lr.startColor = Color.red;
+        lr.endColor = Color.blue;
         lr.gameObject.SetActive(false);
         this.inactiveLines.Push(lr);
         return lr;

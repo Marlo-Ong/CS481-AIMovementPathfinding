@@ -16,8 +16,12 @@ public class Move : Command
     {
         //Debug.Log("MoveInit:\tMoving to: " + movePosition);
         line = LineMgr.inst.CreateMoveLine(entity.position, movePosition);
-        potentialLine = LineMgr.inst.CreatePotentialLine(entity.position);
-        line.gameObject.SetActive(true);
+
+        if (AIMgr.inst.isPotentialFieldsMovement)
+        {
+            potentialLine = LineMgr.inst.CreatePotentialLine(entity.position);
+            line.gameObject.SetActive(true);
+        }
     }
 
     public override void Tick()
@@ -55,49 +59,56 @@ public class Move : Command
             p = DistanceMgr.inst.GetPotential(entity, ent);
             if (p.distance < AIMgr.inst.potentialDistanceThreshold)
             {
-                repulsivePotential += Vector3.Min(p.direction * entity.mass *
-                    AIMgr.inst.repulsiveCoefficient * Mathf.Pow(p.diff.magnitude, AIMgr.inst.repulsiveExponent), new Vector3(1000, 1000, 100));
+                repulsivePotential += Vector3.Min(AIMgr.inst.repulsiveCoefficient * entity.mass * Mathf.Pow(p.diff.magnitude, AIMgr.inst.repulsiveExponent) * p.direction, new Vector3(1000, 1000, 100));
                 //repulsivePotential += p.diff;
             }
         }
 
+        Vector3 maxPotential = new Vector3(1000, 1000, 1000);
+
         foreach (GameObject obstacle in EnvironmentMgr.inst.circlePool)
         {
-            if (obstacle.activeInHierarchy)
+            if (!obstacle.activeInHierarchy)
+                continue;
+
+            float distance;
+            Vector3 closestPoint = obstacle.GetComponent<SphereCollider>().ClosestPointOnBounds(entity.position);
+            Vector3 displacement = closestPoint - entity.position;
+            distance = displacement.magnitude;
+            Vector3 direction = displacement.normalized;
+
+            if (distance < AIMgr.inst.potentialDistanceThreshold)
             {
-                float distance;
-                Vector3 closestPoint = obstacle.GetComponent<SphereCollider>().ClosestPointOnBounds(entity.position);
-                Vector3 displacement = closestPoint - entity.position;
-                distance = displacement.magnitude;
-                Vector3 direction = displacement.normalized;
-                if (distance < AIMgr.inst.potentialDistanceThreshold)
-                {
-                    repulsivePotential += Vector3.Min(direction * entity.mass * AIMgr.inst.repulsiveCoefficient * Mathf.Pow(distance, AIMgr.inst.repulsiveExponent),
-                                                        new Vector3(1000, 1000, 1000));
-                }
+                repulsivePotential += Vector3.Min(
+                    AIMgr.inst.repulsiveCoefficient
+                    * entity.mass
+                    * Mathf.Pow(distance, AIMgr.inst.repulsiveExponent)
+                    * direction, maxPotential);
             }
         }
-        foreach(GameObject obstacle in EnvironmentMgr.inst.rectanglePool)
+        foreach (GameObject obstacle in EnvironmentMgr.inst.rectanglePool)
         {
-            if(obstacle.activeInHierarchy)
+            if (!obstacle.activeInHierarchy)
+                continue;
+
+            float distance;
+            Vector3 closestPoint = obstacle.GetComponent<BoxCollider>().ClosestPointOnBounds(entity.position);
+            Vector3 displacement = closestPoint - entity.position;
+            distance = displacement.magnitude;
+            Vector3 direction = displacement.normalized;
+            if (distance < AIMgr.inst.potentialDistanceThreshold)
             {
-                float distance;
-                Vector3 closestPoint = obstacle.GetComponent<BoxCollider>().ClosestPointOnBounds(entity.position);
-                Vector3 displacement = closestPoint - entity.position;
-                distance = displacement.magnitude;
-                Vector3 direction = displacement.normalized;
-                if(distance < AIMgr.inst.potentialDistanceThreshold)
-                {
-                    repulsivePotential += Vector3.Min(direction * entity.mass * AIMgr.inst.repulsiveCoefficient * Mathf.Pow(distance, AIMgr.inst.repulsiveExponent),
-                                                        new Vector3(1000, 1000, 1000));
-                }
+                repulsivePotential += Vector3.Min(
+                    AIMgr.inst.repulsiveCoefficient
+                    * entity.mass
+                    * Mathf.Pow(distance, AIMgr.inst.repulsiveExponent)
+                    * direction, maxPotential);
             }
         }
-        //repulsivePotential *= repulsiveCoefficient * Mathf.Pow(repulsivePotential.magnitude, repulsiveExponent);
+        // repulsivePotential *= repulsiveCoefficient * Mathf.Pow(repulsivePotential.magnitude, repulsiveExponent);
         attractivePotential = movePosition - entity.position;
         Vector3 tmp = attractivePotential.normalized;
-        attractivePotential = tmp * 
-            AIMgr.inst.attractionCoefficient * Mathf.Pow(attractivePotential.magnitude, AIMgr.inst.attractiveExponent);
+        attractivePotential = AIMgr.inst.attractionCoefficient * Mathf.Pow(attractivePotential.magnitude, AIMgr.inst.attractiveExponent) * tmp;
         potentialSum = attractivePotential - repulsivePotential;
 
         dh = Utils.Degrees360(Mathf.Rad2Deg * Mathf.Atan2(potentialSum.x, potentialSum.z));

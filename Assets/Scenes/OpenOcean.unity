@@ -526,7 +526,7 @@ Transform:
   m_GameObject: {fileID: 85442620}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 44.6, y: 0, z: 0}
+  m_LocalPosition: {x: 45, y: 0, z: 0}
   m_LocalScale: {x: 50, y: 1, z: 50}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -573,7 +573,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
+  - {fileID: 2100020, guid: aa54c221fd2e74845aa92e6cb5bb948c, type: 3}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -3117,7 +3117,6 @@ MonoBehaviour:
   cameraTurnRate: 30
   currentYawEulerAngles: {x: 0, y: 0, z: 0}
   currentPitchEulerAngles: {x: 0, y: 0, z: 0}
-  isRTSMode: 1
 --- !u!1 &573230232
 GameObject:
   m_ObjectHideFlags: 0
@@ -5825,6 +5824,7 @@ MonoBehaviour:
   algorithmType: 0
   startPosition: {x: 1, y: 0, z: 1}
   endPosition: {x: 750, y: 0, z: 750}
+  gridCellSize: 5
 --- !u!1 &1141044695
 GameObject:
   m_ObjectHideFlags: 0
@@ -8499,6 +8499,8 @@ MonoBehaviour:
   targetArea: {fileID: 1878704998}
   aStarEnvironment: {fileID: 1924952854}
   officeEnvironment: {fileID: 108080949}
+  circlePool: []
+  rectanglePool: []
 --- !u!1 &1517180311
 GameObject:
   m_ObjectHideFlags: 0
@@ -10293,6 +10295,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 1504576807}
   - {fileID: 392106490}
   - {fileID: 1853669714}
   - {fileID: 591780679}
@@ -10302,7 +10305,6 @@ Transform:
   - {fileID: 1229635576}
   - {fileID: 1129782061}
   - {fileID: 684643217}
-  - {fileID: 1504576807}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1710943775
@@ -11167,7 +11169,7 @@ Transform:
   m_GameObject: {fileID: 1878704998}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 400, y: 0, z: 400}
+  m_LocalPosition: {x: 359, y: 0, z: 180}
   m_LocalScale: {x: 50, y: 1, z: 50}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -11214,7 +11216,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
+  - {fileID: 2100000, guid: 61bcea22404bda2469670dd9255037db, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -13267,6 +13269,11 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 983888704}
     m_Modifications:
+    - target: {fileID: 7731747306308124120, guid: 2669a7519e0f20249817ff6be6af9ed7,
+        type: 3}
+      propertyPath: m_Parameters.numCapVertices
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7731747306308124122, guid: 2669a7519e0f20249817ff6be6af9ed7,
         type: 3}
       propertyPath: m_Name
