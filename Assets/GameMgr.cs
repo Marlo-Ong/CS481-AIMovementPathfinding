@@ -28,6 +28,7 @@ public class GameMgr : MonoBehaviour
     public AlgorithmType algorithmType;
     public Vector3 startPosition;
     public Vector3 endPosition;
+    public int gridCellSize;
 
     private void Awake()
     {

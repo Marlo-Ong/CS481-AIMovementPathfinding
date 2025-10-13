@@ -169,7 +169,7 @@ public static class AlgorithmFactory
             prevLength = width;
             prevLength = length;
 
-            grid = new Grid(width, length, cellSize: 5);
+            grid = new Grid(width, length, cellSize: GameMgr.inst.gridCellSize);
             aStar = new AStar(grid);
         }
 
