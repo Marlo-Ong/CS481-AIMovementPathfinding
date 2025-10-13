@@ -98,6 +98,12 @@ public class LineMgr : MonoBehaviour
         }
     }
 
+    public void Destroy(LineRenderer lr)
+    {
+        if (lr != null)
+            Destroy(lr.gameObject);
+    }
+
     public void DestroyAllLines()
     {
         foreach (var line in this.activeLines)

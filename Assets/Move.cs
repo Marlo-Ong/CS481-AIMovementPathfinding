@@ -140,6 +140,6 @@ public class Move : Command
     {
         entity.desiredSpeed = 0;
         LineMgr.inst.DestroyLR(line);
-        LineMgr.inst.DestroyLR(potentialLine);
+        LineMgr.inst.Destroy(potentialLine);
     }
 }
