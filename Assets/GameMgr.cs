@@ -42,6 +42,16 @@ public class GameMgr : MonoBehaviour
         this.isGameActive = false;
     }
 
+    void Update()
+    {
+        // Restart current environment
+        if (Input.GetKeyDown(KeyCode.C))
+        {
+            StopGame();
+            StartGame();
+        }
+    }
+
     public static void SetMode(Mode newMode)
     {
         if (Mode != newMode)
