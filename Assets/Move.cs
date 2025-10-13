@@ -50,10 +50,12 @@ public class Move : Command
     {
         Potential p;
         repulsivePotential = Vector3.one; repulsivePotential.y = 0;
-        foreach (Entity ent in EntityMgr.inst.entities) {
+        foreach (Entity ent in EntityMgr.inst.entities)
+        {
             if (ent == entity) continue;
             p = DistanceMgr.inst.GetPotential(entity, ent);
-            if (p.distance < AIMgr.inst.potentialDistanceThreshold) {
+            if (p.distance < AIMgr.inst.potentialDistanceThreshold)
+            {
                 repulsivePotential += p.direction * entity.mass *
                     AIMgr.inst.repulsiveCoefficient * Mathf.Pow(p.diff.magnitude, AIMgr.inst.repulsiveExponent);
                 //repulsivePotential += p.diff;

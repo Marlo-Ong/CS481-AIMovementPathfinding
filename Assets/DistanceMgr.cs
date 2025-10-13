@@ -22,6 +22,13 @@ public class Potential
         cpaInfo = new CPAInfo(own, target);
 
     }
+
+    /*public Potential(Entity own, GameObject obst)
+    {
+        ownship = own;
+        
+    }
+    */
     void InitDefaults()
     {
         distance = 0;
@@ -93,6 +100,10 @@ public class DistanceMgr : MonoBehaviour
     public Potential[,] potentials2D;
     public Dictionary<Entity, Dictionary<Entity, Potential>> potentialsDictionary;
     public List<List<Potential>> potentialsList;
+    /*public Potential[,] obstaclePotentials2D;
+    public Dictionary<Entity, Dictionary<GameObject, Potential>> obstaclePotentialsDictionary;
+    public List<List<Potential>> obstaclePotentialsList;
+    */
 
     // Start is called before the first frame update
     void Start()
@@ -110,6 +121,27 @@ public class DistanceMgr : MonoBehaviour
         potentialsList = new List<List<Potential>>();
         int n = EntityMgr.inst.entities.Count;
         potentials2D = new Potential[n, n];
+
+        /*obstaclePotentialsDictionary = new Dictionary<Entity, Dictionary<GameObject, Potential>>();
+        obstaclePotentialsList = new List<List<Potential>>();
+        int o = 0;
+        foreach (GameObject obj in EnvironmentMgr.inst.circlePool)
+        {
+            if (obj.activeInHierarchy)
+            {
+                o++;
+            }
+        }
+        foreach (GameObject obj in EnvironmentMgr.inst.rectanglePool)
+        {
+            if (obj.activeInHierarchy)
+            {
+                o++;
+            }
+        }
+        obstaclePotentials2D = new Potential[n, o];
+        */
+
         i = 0;
         foreach (Entity ent1 in EntityMgr.inst.entities)
         {
@@ -127,6 +159,20 @@ public class DistanceMgr : MonoBehaviour
                 j++;
             }
             i++;
+
+            /*Dictionary<GameObject, Potential> ent1ObjPotDictionary = new Dictionary<GameObject, Potential>();
+            List<Potential> ent1ObjPotList = new List<Potential>();
+            obstaclePotentialsDictionary.Add(ent1, ent1ObjPotDictionary);
+            obstaclePotentialsList.Add(ent1ObjPotList);
+            int k = 0;
+            foreach(GameObject obstacle in EnvironmentMgr.inst.circlePool)
+            {
+                if(obstacle.activeInHierarchy)
+                {
+                    Potential pot = new Potential(ent1, obstacle);
+                }
+            }
+            */
         }
     }
 
@@ -137,10 +183,18 @@ public class DistanceMgr : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (isInitialized) ;
-        // UpdatePotentials();
-        else
+        if (isInitialized && potentialsList.Count > 0)
+        {
+            UpdatePotentials();
+        }
+        else if (isInitialized && potentialsList.Count == 0)
+        {
             Initialize();
+        }
+        else if (!isInitialized) 
+        {
+            Initialize();
+        }  
     }
 
     public List<Potential> selectedEntityPotentials; // For debugging
@@ -188,5 +242,16 @@ public class DistanceMgr : MonoBehaviour
             p = potentialsDictionary[e1][e2];
         return p;
     }
+
+    /*public Potential GetPotential(Entity e, GameObject obst)
+    {
+        Potential p = null;
+        if (isInitialized)
+        {
+            p = obstaclePotentialsDictionary[e][obst];
+        }
+        return p;
+    }
+    */
 
 }

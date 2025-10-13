@@ -48,6 +48,15 @@ public class GameMgr : MonoBehaviour
         {
             Mode = newMode;
             OnModeChanged?.Invoke(newMode);
+
+            if (newMode == Mode.GroupMovementPotentialField || newMode == Mode.AStarPotentialField)
+            {
+                AIMgr.inst.isPotentialFieldsMovement = true;
+            }
+            else
+            {
+                AIMgr.inst.isPotentialFieldsMovement = false;
+            }
         }
     }
 

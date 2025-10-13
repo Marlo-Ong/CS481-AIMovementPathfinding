@@ -17,7 +17,7 @@ public enum Environment
 
 public class EnvironmentMgr : MonoBehaviour
 {
-    private static EnvironmentMgr inst;
+    public static EnvironmentMgr inst;
 
     [Serializable]
     public struct Range
@@ -47,8 +47,8 @@ public class EnvironmentMgr : MonoBehaviour
     [SerializeField] private GameObject aStarEnvironment;
     [SerializeField] private GameObject officeEnvironment;
 
-    private List<GameObject> circlePool;
-    private List<GameObject> rectanglePool;
+    public List<GameObject> circlePool;
+    public List<GameObject> rectanglePool;
 
     void Start()
     {

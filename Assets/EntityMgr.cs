@@ -41,7 +41,10 @@ public class EntityMgr : MonoBehaviour
         };
 
         for (int i = 0; i < numEntities; i++)
-            CreateEntity(EntityType.TugBoat, startPos, Vector3.zero);
+        {
+            Vector3 newStart = startPos + new Vector3(10 * i, 0, 10 * i);
+            CreateEntity(EntityType.TugBoat, newStart, Vector3.zero);
+        }
     }
 
     public GameObject movableEntitiesRoot;
