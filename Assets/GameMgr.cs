@@ -94,6 +94,7 @@ public class GameMgr : MonoBehaviour
             return;
 
         inst.isGameActive = false;
+        AlgorithmFactory.CancelAllTasks();
         OnGameStopped?.Invoke();
     }
 }

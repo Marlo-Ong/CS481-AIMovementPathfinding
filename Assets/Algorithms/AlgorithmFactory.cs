@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
 
@@ -101,6 +102,13 @@ public static class AlgorithmFactory
     private static Grid grid;
     private static int prevWidth = -1;
     private static int prevLength = -1;
+    private static CancellationTokenSource cts = new();
+
+    public static void CancelAllTasks()
+    {
+        cts.Cancel();
+        cts = new();
+    }
 
     public static List<Vector3> FindPath(AlgorithmType type, Vector3 start, Vector3 target)
     {
@@ -136,7 +144,7 @@ public static class AlgorithmFactory
         int targetX = Mathf.FloorToInt(target.x / grid.cellSize);
         int targetY = Mathf.FloorToInt(target.z / grid.cellSize);
 
-        var nodes = await Task.Run(() => algorithm.FindPath((startX, startY), (targetX, targetY)));
+        var nodes = await Task.Run(() => algorithm.FindPath((startX, startY), (targetX, targetY)), cts.Token);
 
         var result = new List<Vector3>();
         foreach (var node in nodes)
