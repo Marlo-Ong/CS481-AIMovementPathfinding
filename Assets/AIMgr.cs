@@ -52,15 +52,27 @@ public class AIMgr : MonoBehaviour
 
     public async Task HandleMove(List<Entity> entities, Vector3 target)
     {
+        AlgorithmFactory.CancelAllTasks();
+
+        UIMgr.inst.SetStatus("Finding path...");
+        bool failure = false;
+
         foreach (Entity entity in entities)
         {
             UnitAI uai = entity.GetComponent<UnitAI>();
 
             uai.StopAndRemoveAllCommands();
             var path = await AlgorithmFactory.FindPathAsync(GameMgr.inst.algorithmType, entity.position, target);
+            if (path.Count <= 1)
+            {
+                failure = true;
+                continue;
+            }
+
             foreach (var point in path)
                 uai.AddCommand(new Move(entity, point));
         }
+        UIMgr.inst.SetStatus(failure ? "Some paths not found." : "Found paths.");
     }
 
     void AddOrSet(Command c, UnitAI uai)

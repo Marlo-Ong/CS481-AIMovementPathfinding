@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -8,6 +7,7 @@ public class UIMgr : MonoBehaviour
     public static UIMgr inst;
     public GameObject ToggleMultiSelect;
     public GameObject SceneSelectionCanvas;
+    public TMP_Text Status;
     public bool isActive;
     private void Awake()
     {
@@ -17,6 +17,8 @@ public class UIMgr : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        GameMgr.OnGameStopped += () => SetStatus(string.Empty);
+
         ToggleMultiSelect.SetActive(false);
 #if UNITY_ANDROID
             ToggleMultiSelect.SetActive(true);
@@ -54,5 +56,10 @@ public class UIMgr : MonoBehaviour
             Debug.Log("Toggling UI");
             SceneSelectionCanvas.SetActive(!SceneSelectionCanvas.activeInHierarchy);
         }
+    }
+
+    public void SetStatus(string status)
+    {
+        this.Status.text = status;
     }
 }
